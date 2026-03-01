@@ -1,3 +1,5 @@
+import os
+from pathlib import Path
 from flask import Flask, render_template, request, jsonify
 from validators import validate_input_data
 from inference import CancerPredictor
@@ -54,11 +56,12 @@ def categorize_age(age_years):
 
 
 app = Flask(__name__)
+BASE_DIR = Path(__file__).resolve().parent
 
 # Initialize the cancer predictor
 predictor = CancerPredictor(
-    model_path='model/AI_Vectors_Original_Features_Model.joblib',
-    features_path='model/ai_vectors_original_features.json'
+    model_path=str(BASE_DIR / 'model' / 'AI_Vectors_Original_Features_Model.joblib'),
+    features_path=str(BASE_DIR / 'model' / 'ai_vectors_original_features.json')
 )
 
 @app.route('/')
@@ -139,4 +142,5 @@ def predict():
         return render_template('index.html', errors=[error_msg])
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    port = int(os.getenv('PORT', '5000'))
+    app.run(debug=False, host='0.0.0.0', port=port)
